@@ -1,8 +1,10 @@
 package logic;
 
+import db.ConectionDDBB;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
+import java.sql.Connection;
 
 import mqtt.MQTTBroker;
 import mqtt.MQTTSuscriber;

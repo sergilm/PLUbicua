@@ -20,6 +20,8 @@ import com.google.gson.JsonElement;
 
 import db.ConectionDDBB;
 import db.Measurement;
+import db.Tiempo;
+import static java.lang.Thread.sleep;
 
 /**
  * ES:Hilo que obtiene la previsión del tiempo de wunderground.com/api para insertar la previsión en la base de datos
@@ -29,7 +31,7 @@ public class ThreadWeatherForecast extends Thread
 {
 	// Period at which the Thread will read data from the JSON is 60 minutes
 	private int PERIOD = 1000 * 60 * 60;	
-	private static String APIkey = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+	private static String APIkey = "a63d2ad593904626c30f67f8d3f9a630";
 
 	
 	public ThreadWeatherForecast()
@@ -42,7 +44,7 @@ public class ThreadWeatherForecast extends Thread
 	{
 		while (true)
 		{
-			ArrayList<Measurement> weatherValues = obtainPrediction();
+			ArrayList<Tiempo> weatherValues = obtainPrediction();
 			try
 			{
 				ConectionDDBB conectiondb = new ConectionDDBB();
@@ -50,16 +52,25 @@ public class ThreadWeatherForecast extends Thread
 				Log.log.info("Search forecast");
 				for (int i = 0; i < weatherValues.size(); i++)
 				{
+                                    //*********************************************************************************
 					PreparedStatement ps = ConectionDDBB.InsertWeatherForecast(con);
-					Timestamp ts = new Timestamp(weatherValues.get(i).getDateMeasurement().getTime());
-					ps.setInt(1, 1);
-					ps.setInt(2, weatherValues.get(i).getSensorType());
-					ps.setTimestamp(3, ts);
-					ps.setInt(4, (int) weatherValues.get(i).getValue());
-					ps.setInt(5, 1);
-					ps.setInt(6, weatherValues.get(i).getSensorType());
-					ps.setTimestamp(7, ts);
-					ps.setInt(8, (int) weatherValues.get(i).getValue());
+					Timestamp ts = new Timestamp(weatherValues.get(i).getFecha().getTime());
+					ps.setTimestamp(1, ts);
+					ps.setInt(2, weatherValues.get(i).getIdZona());
+					ps.setDouble(3, weatherValues.get(i).getTemperatura());
+					ps.setDouble(4, weatherValues.get(i).getVelViento());
+					ps.setInt(5, weatherValues.get(i).getDirViento());
+					ps.setDouble(6, weatherValues.get(i).getPorcPrecipitacion());
+					ps.setString(7,weatherValues.get(i).getEstado());
+					ps.setInt(8, weatherValues.get(i).getIdPlaca());
+                                        ps.setTimestamp(9, ts);
+					ps.setInt(10, weatherValues.get(i).getIdZona());
+					ps.setDouble(11, weatherValues.get(i).getTemperatura());
+					ps.setDouble(12, weatherValues.get(i).getVelViento());
+					ps.setInt(13, weatherValues.get(i).getDirViento());
+					ps.setDouble(14, weatherValues.get(i).getPorcPrecipitacion());
+					ps.setString(15,weatherValues.get(i).getEstado());
+					ps.setInt(16, weatherValues.get(i).getIdPlaca());
 					Log.log.debug("Inserting weather value: {}", ps.toString());
 					ps.executeUpdate();
 				}
@@ -84,19 +95,6 @@ public class ThreadWeatherForecast extends Thread
 			}
 		}
 
-	}
-
-	/**
-	 * Gets the API's URL page
-	 * 
-	 * @return URL
-	 * @throws IOException
-	 */
-	private static URL getURLCity(String city, String countryCode) throws IOException
-	{
-		String url = "https://api.openweathermap.org/data/2.5/forecast?q=" + getCity() + "," + countryCode + "&appid=" + APIkey;
-		Log.log.debug("URL={}", url);
-		return new URL(url);
 	}
 	
 	/**
@@ -149,9 +147,10 @@ public class ThreadWeatherForecast extends Thread
 
 	
 //TODO cambiar
-	public static ArrayList<Measurement> obtainPrediction()
+        //**********************************************
+	public static ArrayList<Tiempo> obtainPrediction()
 	{
-		ArrayList<Measurement> weather = new ArrayList<>();
+		ArrayList<Tiempo> weather = new ArrayList<>();
 		try
 		{
 			//EN: Obtain data from API in a StringBuffer
@@ -178,17 +177,28 @@ public class ThreadWeatherForecast extends Thread
 			{
 				if (i % 3 == 0)
 				{
-					Date currentDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse((o.get("list").getAsJsonArray().get(cont).getAsJsonObject().get("dt_txt")).toString().split("\"")[1]);
+                                    //**************************************************************************
+					Date fecha = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse((o.get("list").getAsJsonArray().get(cont).getAsJsonObject().get("dt_txt")).toString().split("\"")[1]);
 					
+                                        int idZona = 1;
+                                        
 					double temp = Double.parseDouble((o.get("list").getAsJsonArray().get(cont).getAsJsonObject().get("main").getAsJsonObject().get("temp").toString())) - 272.15f;
-					weather.add(new Measurement(1,currentDate, temp));
+					//weather.add(new Measurement(1,currentDate, temp));
 					
-					double humidity = Double.parseDouble((o.get("list").getAsJsonArray().get(cont).getAsJsonObject().get("main").getAsJsonObject().get("humidity").toString()));
-					weather.add(new Measurement(2,currentDate, humidity));
+					//double humidity = Double.parseDouble((o.get("list").getAsJsonArray().get(cont).getAsJsonObject().get("main").getAsJsonObject().get("humidity").toString()));
+					//weather.add(new Measurement(2,currentDate, humidity));
 					
-					double wind = Double.parseDouble((o.get("list").getAsJsonArray().get(cont).getAsJsonObject().get("wind").getAsJsonObject().get("speed").toString()));
-					weather.add(new Measurement(6,currentDate, wind));
+                                        String estado = o.get("list").getAsJsonArray().get(cont).getAsJsonObject().get("weather").getAsJsonObject().get("main").toString();
+                                        
+                                        int dirViento = Integer.parseInt((o.get("list").getAsJsonArray().get(cont).getAsJsonObject().get("wind").getAsJsonObject().get("deg").toString()));
+                                        
+					double velViento = Double.parseDouble((o.get("list").getAsJsonArray().get(cont).getAsJsonObject().get("wind").getAsJsonObject().get("speed").toString()));
+					//weather.add(new Measurement(6,currentDate, wind));
+                                        
+                                        double porPrep = Double.parseDouble((o.get("list").getAsJsonArray().get(cont).getAsJsonObject().get("pop").toString()));
 					
+                                        weather.add(new Tiempo(fecha, temp, velViento, dirViento, porPrep, estado, 1, 1));
+                                        //*********************************************************
 					cont++;
 				}
 			}

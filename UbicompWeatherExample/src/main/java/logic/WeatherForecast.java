@@ -17,7 +17,7 @@ import db.Measurement;
 
 public class WeatherForecast
 {
-	private static String APIkey = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+	private static String APIkey = "a63d2ad593904626c30f67f8d3f9a630";
 
 	
 	private ArrayList<Measurement> getForecastCity(String city, String countryCode)

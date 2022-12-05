@@ -2,8 +2,8 @@
 <Configuration status="info">
 	<Appenders>				
 	    <!-- LOG -->
-		<RollingFile name="LogFile" fileName="/usr/share/tomcat/webapps/UbicompWeatherExample/log/log.log"
-			filePattern="/usr/share/tomcat/webapps/UbicompWeatherExample/log/logs/Ubicomp-%d{yyyy}-%i.log.gz">
+		<RollingFile name="LogFile" fileName="${env:CATALINA_HOME}/webapps/UbicompWeatherExample/log/log.log"
+			filePattern="${env:CATALINA_HOME}/webapps/UbicompWeatherExample/log/logs/Ubicomp-%d{yyyy}-%i.log.gz">
 			<PatternLayout
 				pattern="%n%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %-30l %logger{36} ### %msg"
 				header="-- UBICOMP EXAMPLE --" />
@@ -14,8 +14,8 @@
 			<DefaultRolloverStrategy max="20"/>
 		</RollingFile>		
 	    <!-- LOGDB -->
-		<RollingFile name="LogFileDB" fileName="/usr/share/tomcat/webapps/UbicompWeatherExample/log/logdb.log"
-			filePattern="/usr/share/tomcat/webapps/UbicompWeatherExample/log/logs/Ubicomp-%d{yyyy}-%i.logdb.gz">
+		<RollingFile name="LogFileDB" fileName="${env:CATALINA_HOME}/webapps/UbicompWeatherExample/log/logdb.log"
+			filePattern="${env:CATALINA_HOME}/webapps/UbicompWeatherExample/log/logs/Ubicomp-%d{yyyy}-%i.logdb.gz">
 			<PatternLayout
 				pattern="%n%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %-30l %logger{36} ### %msg"
 				header="-- UBICOMP EXAMPLE --" />
@@ -26,8 +26,8 @@
 			<DefaultRolloverStrategy max="20"/>
 		</RollingFile>		
 	    <!-- LOGMQTT -->
-		<RollingFile name="LogFileMQTT" fileName="/usr/share/tomcat}/webapps/UbicompWeatherExample/log/logmqtt.log"
-			filePattern="/usr/share/tomcat/webapps/UbicompWeatherExample/log/logs/Ubicomp-%d{yyyy}-%i.logmqtt.gz">
+		<RollingFile name="LogFileMQTT" fileName="${env:CATALINA_HOME}/webapps/UbicompWeatherExample/log/logmqtt.log"
+			filePattern="${env:CATALINA_HOME}/webapps/UbicompWeatherExample/log/logs/Ubicomp-%d{yyyy}-%i.logmqtt.gz">
 			<PatternLayout
 				pattern="%n%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %-30l %logger{36} ### %msg"
 				header="-- UBICOMP EXAMPLE --" />

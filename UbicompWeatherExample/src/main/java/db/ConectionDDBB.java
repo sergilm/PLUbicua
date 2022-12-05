@@ -1,7 +1,10 @@
 package db;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
@@ -27,7 +30,7 @@ public class ConectionDDBB
 	          {
 	            Context ctx = new InitialContext();
 	            // Get the connection factory configured in Tomcat
-	            DataSource ds = (DataSource) ctx.lookup("java:/comp/env/jdbc/weatherstation");
+	            DataSource ds = (DataSource) ctx.lookup("java:/comp/env/jdbc/ConexionMySQL");
 
 	            // Obtiene una conexion
 	            con = ds.getConnection();
@@ -49,17 +52,6 @@ public class ConectionDDBB
         return con;
     }
     
-    public void closeTransaction(Connection con)
-    {
-        try
-          {
-            con.commit();
-            Log.logdb.debug("Transaction closed");
-          } catch (SQLException ex)
-          {
-            Log.logdb.error("Error closing the transaction: {}", ex);
-          }
-    }
     
     public void cancelTransaction(Connection con)
     {
@@ -162,11 +154,6 @@ public class ConectionDDBB
     	return getStatement(con,"SELECT * FROM WHEATHERSTATION.STATION WHERE ID=?;");  	
     }
     
-    public static PreparedStatement InsertnewMeasurement(Connection con)
-    {
-    	return getStatement(con,"INSERT INTO MEASUREMENT (STATION_ID, SENSORTYPE_ID, DATE, VALUE) VALUES (?,?,?,?) ON duplicate key update STATION_ID=?, SENSORTYPE_ID=?, DATE=?, VALUE=?;");  	
-    }
-    
     
     
     
@@ -189,5 +176,33 @@ public class ConectionDDBB
     public static PreparedStatement SetDataBD(Connection con)
     {
     	return getStatement(con,"INSERT INTO UBICOMP.MEASUREMENT VALUES (?,?)");  	
+    }
+    
+    public static PreparedStatement GetTiempos(Connection con)
+    {
+    	return getStatement(con,"SELECT * FROM TIEMPO;");  	
+    }
+    
+    
+    
+    
+    public static PreparedStatement InsertPlaca(Connection con)
+    {
+        return getStatement(con, "INSERT INTO PLACA (idPLACA, ubicacion, orientacion, USER_idUser) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE idPLACA=?, ubicacion=?, orientacion=?, USER_idUser=?;");
+    }
+    
+    public static PreparedStatement InsertTiempo(Connection con)
+    {
+    	return getStatement(con,"INSERT INTO TIEMPO (fecha, idZona, temperatura, velViento, dirViento, porcPrecipitacion, estado, idPlaca) VALUES (?,?,?,?,?,?,?,?) ON duplicate key update fecha=?, idZona=?, temperatura=?, velViento=?, dirViento=?, porcPrecipitacion=?, estado=?, idPlaca=?;");  	
+    }
+    
+    public static PreparedStatement InsertZona(Connection con)
+    {
+        return getStatement(con,"INSERT INTO ZONA (idZONA, nombre) VALUES (?,?) ON DUPLICATE KEY UPDATE idZONA=?, nombre=?;");
+    }
+    
+    public static PreparedStatement InsertUser(Connection con)
+    {
+        return getStatement(con,"INSERT INTO USER (email, password, name, idUser) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE email=?, password=?, name=?, idUser=?;");
     }
 }

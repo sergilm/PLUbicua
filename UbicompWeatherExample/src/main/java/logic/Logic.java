@@ -7,6 +7,7 @@ import db.City;
 import db.ConectionDDBB;
 import db.SensorType;
 import db.Station;
+import db.Tiempo;
 import db.Topics;
 
 import java.sql.Connection;
@@ -15,6 +16,9 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.sql.Date;
 
 public class Logic 
 {
@@ -434,7 +438,7 @@ public class Logic
 		return forecast;
 	}
 	
-	
+/*	
 	public static void storeNewMeasurement(Topics newTopic)
 	{
 		ConectionDDBB conector = new ConectionDDBB();
@@ -470,7 +474,204 @@ public class Logic
 			conector.closeConnection(con);
 		}
 	}
-	
+*/	
+        
+        
+        public static ArrayList<Tiempo> getTiemposFromDB()
+	{
+		ArrayList<Tiempo> tiempos = new ArrayList<Tiempo>();
+		
+		ConectionDDBB conector = new ConectionDDBB();
+		Connection con = null;
+		try
+		{
+			con = conector.obtainConnection(true);
+			Log.log.debug("Database Connected");
+			
+                        //USER
+                        PreparedStatement ps5 = ConectionDDBB.InsertUser(con);
+                        //Timestamp ts = new Timestamp(weatherValues.get(i).getFecha().getTime());
+                        ps5.setString(1, "hola@gmail.com");
+                        ps5.setString(2, "contraseña");
+                        ps5.setString(3, "Raul");
+                        ps5.setInt(4, 1);
+                        ps5.setString(5, "hola@gmail.com");
+                        ps5.setString(6, "contraseña");
+                        ps5.setString(7, "Raul");
+                        ps5.setInt(8, 1);
+                        ps5.executeUpdate();
+                        
+                        
+                        //PLACA
+                        PreparedStatement ps3 = ConectionDDBB.InsertPlaca(con);
+                        //Timestamp ts = new Timestamp(weatherValues.get(i).getFecha().getTime());
+                        ps3.setInt(1, 4);
+                        ps3.setString(2, "Madrid");
+                        ps3.setInt(3, 90);
+                        ps3.setInt(4,1);
+                        ps3.setInt(5, 4);
+                        ps3.setString(6, "Madrid");
+                        ps3.setInt(7, 90);
+                        ps3.setInt(8,1);
+
+                        ps3.executeUpdate();
+                        
+                        //ZONA
+                        PreparedStatement ps4 = ConectionDDBB.InsertZona(con);
+                        //Timestamp ts = new Timestamp(weatherValues.get(i).getFecha().getTime());
+                        ps4.setInt(1, 4);
+                        ps4.setString(2, "Madrid");
+                        ps4.setInt(3, 4);
+                        ps4.setString(4, "Madrid");
+                        
+                        ps4.executeUpdate();
+                        
+                        
+                        //TIEMPO
+                        String withTime = "2014-01-01 12:30";
+                        DateTimeFormatter formatterWithTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                        LocalDateTime january1st2014WithTime = LocalDateTime.parse(withTime, formatterWithTime);
+
+                        //Tiempo t = new Tiempo(d, 8.0, 100.0, 89, 99.0, "Soleado", 1, 1);
+                        
+                        PreparedStatement ps2 = ConectionDDBB.InsertTiempo(con);
+                        //Timestamp ts = new Timestamp(weatherValues.get(i).getFecha().getTime());
+                        ps2.setDate(1, Date.valueOf(january1st2014WithTime.toLocalDate()));
+                        ps2.setInt(2, 4);
+                        ps2.setDouble(3, 90.0);
+                        ps2.setDouble(4, 90.0);
+                        ps2.setInt(5, 90);
+                        ps2.setDouble(6, 90.0);
+                        ps2.setString(7,"Lluvioso");
+                        ps2.setInt(8, 4);
+                        ps2.setDate(9, Date.valueOf(january1st2014WithTime.toLocalDate()));
+                        ps2.setInt(10, 4);
+                        ps2.setDouble(11, 90.0);
+                        ps2.setDouble(12, 90.0);
+                        ps2.setInt(13, 90);
+                        ps2.setDouble(14,90.0);
+                        ps2.setString(15,"Lluvioso");
+                        ps2.setInt(16, 4);
+                        ps2.executeUpdate();
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+			PreparedStatement ps = ConectionDDBB.GetTiempos(con);
+			Log.log.info("Query=> {}", ps.toString());
+			ResultSet rs = ps.executeQuery();
+			while (rs.next())
+			{
+				Tiempo tiempo = new Tiempo();
+				tiempo.setIdPlaca(rs.getInt("IDPLACA"));
+				tiempo.setEstado(rs.getString("ESTADO"));
+                                tiempo.setPorcPrecipitacion(rs.getDouble("PORCPRECIPITACION"));
+                                tiempo.setDirViento(rs.getInt("DIRVIENTO"));
+                                tiempo.setVelViento(rs.getDouble("VELVIENTO"));
+                                tiempo.setTemperatura(rs.getDouble("TEMPERATURA"));
+                                tiempo.setFecha(rs.getDate("FECHA"));
+                                tiempo.setIdZona(rs.getInt("IDZONA"));
+				tiempos.add(tiempo);
+			}	
+		} catch (SQLException e)
+		{
+			Log.log.error("Error: {}", e);
+			tiempos = new ArrayList<Tiempo>();
+		} catch (NullPointerException e)
+		{
+			Log.log.error("Error: {}", e);
+			tiempos = new ArrayList<Tiempo>();
+		} catch (Exception e)
+		{
+			Log.log.error("Error:{}", e);
+			tiempos = new ArrayList<Tiempo>();
+		} finally
+		{
+			conector.closeConnection(con);
+		}
+		return tiempos;
+	}
+        
+        public static void insertTiemposFromDB()
+	{
+		ArrayList<Tiempo> tiempos = new ArrayList<Tiempo>();
+		
+		ConectionDDBB conector = new ConectionDDBB();
+		Connection con = null;
+		try
+		{
+			con = conector.obtainConnection(true);
+			Log.log.debug("Database Connected");
+			
+                       String withTime = "2014-01-01 12:30";
+                        DateTimeFormatter formatterWithTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                        LocalDateTime january1st2014WithTime = LocalDateTime.parse(withTime, formatterWithTime);
+
+                        //Tiempo t = new Tiempo(d, 8.0, 100.0, 89, 99.0, "Soleado", 1, 1);
+                        
+                        PreparedStatement ps = ConectionDDBB.InsertTiempo(con);
+                        //Timestamp ts = new Timestamp(weatherValues.get(i).getFecha().getTime());
+                        ps.setDate(1, Date.valueOf(january1st2014WithTime.toLocalDate()));
+                        ps.setInt(2, 8);
+                        ps.setDouble(3, 8.0);
+                        ps.setDouble(4, 99.0);
+                        ps.setInt(5, 86);
+                        ps.setDouble(6, 99.0);
+                        ps.setString(7,"Soleado");
+                        ps.setInt(8, 1);
+                        ps.setDate(9, Date.valueOf(january1st2014WithTime.toLocalDate()));
+                        ps.setInt(10, 8);
+                        ps.setDouble(11, 8.0);
+                        ps.setDouble(12, 99.0);
+                        ps.setInt(13, 86);
+                        ps.setDouble(14,99.0);
+                        ps.setString(15,"Soleado");
+                        ps.setInt(16, 1);
+                        ps.executeUpdate();
+                        
+			PreparedStatement ps2 = ConectionDDBB.GetTiempos(con);
+			Log.log.info("Query=> {}", ps.toString());
+			ResultSet rs = ps.executeQuery();
+			while (rs.next())
+			{
+				Tiempo tiempo = new Tiempo();
+				tiempo.setIdPlaca(rs.getInt("IDPLACA"));
+				tiempo.setEstado(rs.getString("ESTADO"));
+                                tiempo.setPorcPrecipitacion(rs.getDouble("PORCPRECIPITACION"));
+                                tiempo.setDirViento(rs.getInt("DIRVIENTO"));
+                                tiempo.setVelViento(rs.getDouble("VELVIENTO"));
+                                tiempo.setTemperatura(rs.getDouble("TEMPERATURA"));
+                                tiempo.setFecha(rs.getDate("FECHA"));
+                                tiempo.setIdZona(rs.getInt("IDZONA"));
+				tiempos.add(tiempo);
+			}	
+		} catch (SQLException e)
+		{
+			Log.log.error("Error: {}", e);
+			tiempos = new ArrayList<Tiempo>();
+		} catch (NullPointerException e)
+		{
+			Log.log.error("Error: {}", e);
+			tiempos = new ArrayList<Tiempo>();
+		} catch (Exception e)
+		{
+			Log.log.error("Error:{}", e);
+			tiempos = new ArrayList<Tiempo>();
+		} finally
+		{
+			conector.closeConnection(con);
+		}
+		
+	}
 	
 	
 }

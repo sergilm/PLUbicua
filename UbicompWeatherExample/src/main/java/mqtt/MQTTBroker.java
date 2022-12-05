@@ -3,8 +3,8 @@ package mqtt;
 public class MQTTBroker 
 {		
 	private static int qos = 2;
-	private static String broker = "tcp://192.168.1.131:1883";
-	private static String clientId = "WheatherStationUAH";
+	private static String broker = "tcp://192.168.56.102:1883";
+	private static String clientId = "GrupoPlaca";
 		
 	public MQTTBroker()
 	{
@@ -22,5 +22,6 @@ public class MQTTBroker
 		return clientId;
 	}			
 }
+
 
 
